@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Custom styles */
+::-webkit-input-placeholder {
+  color: #9CA3AF;
+}
+::-moz-placeholder {
+  color: #9CA3AF;
+}
+:-ms-input-placeholder {
+  color: #9CA3AF;
+}
+:-moz-placeholder {
+  color: #9CA3AF;
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Progress line animation */
+.progress-line {
+  transition: width 0.5s ease-in-out;
+}
