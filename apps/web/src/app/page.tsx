@@ -28,10 +28,10 @@ export default function HomePage() {
       <header className="bg-white shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold text-blue-600">DeliveryTracker</Link>
-          <nav className="hidden md:flex space-x-6">
-            <Link href="/" className="text-gray-600 hover:text-blue-600">Home</Link>
-            <Link href="#" className="text-gray-600 hover:text-blue-600">Services</Link>
-            <Link href="#" className="text-gray-600 hover:text-blue-600">Support</Link>
+          <nav className="flex items-center space-x-4">
+            <Link href="/services" className="text-gray-600 hover:text-blue-600">Services</Link>
+            <Link href="/support" className="text-gray-600 hover:text-blue-600">Support</Link>
+            <Link href="/admin/login" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Admin Panel</Link>
           </nav>
         </div>
       </header>
