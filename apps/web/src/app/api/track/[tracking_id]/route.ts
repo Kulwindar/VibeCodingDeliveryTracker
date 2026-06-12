@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase, isDemoMode } from '@/lib/supabase';
 import { demoOrders, findOrderByTrackingId } from '@/lib/demo-storage';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { tracking_id: string } }
@@ -18,10 +20,14 @@ export async function GET(
       customer_name: order.customer_name,
       status: order.status,
       updated_at: order.updated_at,
+    }, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
     });
   }
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase!
     .from('orders')
     .select('tracking_id, customer_name, status, updated_at')
     .eq('tracking_id', tracking_id)
@@ -39,5 +45,9 @@ export async function GET(
     customer_name: data.customer_name,
     status: data.status,
     updated_at: data.updated_at,
+  }, {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+    },
   });
 }

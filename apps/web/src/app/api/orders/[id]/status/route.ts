@@ -4,6 +4,8 @@ import { getNextStatus } from '@deliverytracker/shared';
 import type { OrderStatus } from '@deliverytracker/shared';
 import { findOrderById, updateOrderStatus } from '@/lib/demo-storage';
 
+export const dynamic = 'force-dynamic';
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -27,10 +29,17 @@ export async function PATCH(
     }
 
     const updated = updateOrderStatus(id, status);
-    return NextResponse.json({ id, status, updated_at: updated?.updated_at || new Date().toISOString() });
+    return NextResponse.json(
+      { id, status, updated_at: updated?.updated_at || new Date().toISOString() },
+      {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+        },
+      }
+    );
   }
 
-  const { data: currentOrder, error: fetchError } = await (supabase as any)
+  const { data: currentOrder, error: fetchError } = await supabase!
     .from('orders')
     .select('status')
     .eq('id', id)
@@ -56,7 +65,7 @@ export async function PATCH(
     );
   }
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase!
     .from('orders')
     .update({ status })
     .eq('id', id)
@@ -70,9 +79,16 @@ export async function PATCH(
     );
   }
 
-  return NextResponse.json({
-    id: data.id,
-    status: data.status,
-    updated_at: data.updated_at,
-  });
+  return NextResponse.json(
+    {
+      id: data.id,
+      status: data.status,
+      updated_at: data.updated_at,
+    },
+    {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    }
+  );
 }

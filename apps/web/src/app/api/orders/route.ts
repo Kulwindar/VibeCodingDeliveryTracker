@@ -4,6 +4,8 @@ import { createOrderSchema } from '@/lib/validators';
 import { OrderStatus } from '@deliverytracker/shared';
 import { demoOrders, addOrder } from '@/lib/demo-storage';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -36,7 +38,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase!
       .from('orders')
       .insert({
         customer_name: validated.customer_name,
@@ -75,10 +77,17 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   if (isDemoMode()) {
-    return NextResponse.json({ orders: [...demoOrders], total: demoOrders.length });
+    return NextResponse.json(
+      { orders: [...demoOrders], total: demoOrders.length },
+      {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+        },
+      }
+    );
   }
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase!
     .from('orders')
     .select('*')
     .order('created_at', { ascending: false });
@@ -90,8 +99,15 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json({
-    orders: data,
-    total: data.length,
-  });
+  return NextResponse.json(
+    {
+      orders: data,
+      total: data.length,
+    },
+    {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    }
+  );
 }
