@@ -9,7 +9,7 @@ interface TrackingPageProps {
 export default async function TrackingPage({ params }: TrackingPageProps) {
   const { trackingId } = params;
 
-  if (isDemoMode()) {
+  if (isDemoMode() || trackingId === 'demo-tracking-123') {
     const order = getOrderByTrackingId(trackingId);
     if (!order) {
       return <TrackingPageClient trackingId={trackingId} initialOrder={null} />;

@@ -1,0 +1,40 @@
+
+> @deliverytracker/web@1.0.0 build
+> next build
+
+  ▲ Next.js 14.2.0
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/9) ...
+   Generating static pages (2/9) 
+   Generating static pages (4/9) 
+   Generating static pages (6/9) 
+ ✓ Generating static pages (9/9)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    1.7 kB         95.4 kB
+├ ○ /_not-found                          137 B          87.1 kB
+├ ○ /admin                               1.52 kB        95.3 kB
+├ ○ /admin/login                         1.24 kB          95 kB
+├ ƒ /admin/orders/[id]                   2.26 kB         111 kB
+├ ƒ /api/orders                          0 B                0 B
+├ ƒ /api/orders/[id]/status              0 B                0 B
+├ ƒ /api/track/[tracking_id]             0 B                0 B
+├ ○ /services                            182 B          93.9 kB
+├ ○ /support                             181 B          93.9 kB
+└ ƒ /track/[trackingId]                  64.5 kB         173 kB
++ First Load JS shared by all            87 kB
+  ├ chunks/1dd3208c-7627ab90ada94d06.js  53.7 kB
+  ├ chunks/286-d6e199ac0b52d166.js       31.4 kB
+  └ other shared chunks (total)          1.95 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

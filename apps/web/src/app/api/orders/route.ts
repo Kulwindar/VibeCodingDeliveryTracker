@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data, error } = await supabase!
+    const { data, error } = await (supabase as any)
       .from('orders')
       .insert({
         customer_name: validated.customer_name,
@@ -78,7 +78,7 @@ export async function GET() {
     return NextResponse.json({ orders: [...demoOrders], total: demoOrders.length });
   }
 
-  const { data, error } = await supabase!
+  const { data, error } = await (supabase as any)
     .from('orders')
     .select('*')
     .order('created_at', { ascending: false });

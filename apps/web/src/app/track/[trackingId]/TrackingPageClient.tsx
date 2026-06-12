@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import StatusTimeline from '@/components/StatusTimeline';
 import StatusBadge from '@/components/ui/StatusBadge';
+import { supabase, isDemoMode } from '@/lib/supabase';
 
 interface TrackingPageClientProps {
   trackingId: string;
@@ -36,6 +37,37 @@ export default function TrackingPageClient({ trackingId, initialOrder }: Trackin
       };
       fetchOrder();
     }
+  }, [trackingId, order]);
+
+  // Supabase Realtime subscription for instant updates
+  useEffect(() => {
+    if (isDemoMode() || !supabase || !order) return;
+
+    const channel = supabase
+      .channel(`order:${trackingId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `tracking_id=eq.${trackingId}`,
+        },
+        (payload) => {
+          if (payload.new) {
+            setOrder((prev) => prev ? {
+              ...prev,
+              status: payload.new.status,
+              updated_at: payload.new.updated_at,
+            } : null);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase?.removeChannel(channel);
+    };
   }, [trackingId, order]);
 
   useEffect(() => {
@@ -91,7 +123,7 @@ export default function TrackingPageClient({ trackingId, initialOrder }: Trackin
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-red-600 text-2xl font-bold">!</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Order Not Found</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2" data-testid="error-message">Order Not Found</h2>
             <p className="text-gray-600 mb-6">We could not find any order with this tracking ID. Please check and try again.</p>
             <Link href="/" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
               Track Another Order

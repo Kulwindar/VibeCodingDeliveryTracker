@@ -30,7 +30,7 @@ export async function PATCH(
     return NextResponse.json({ id, status, updated_at: updated?.updated_at || new Date().toISOString() });
   }
 
-  const { data: currentOrder, error: fetchError } = await supabase!
+  const { data: currentOrder, error: fetchError } = await (supabase as any)
     .from('orders')
     .select('status')
     .eq('id', id)
@@ -56,7 +56,7 @@ export async function PATCH(
     );
   }
 
-  const { data, error } = await supabase!
+  const { data, error } = await (supabase as any)
     .from('orders')
     .update({ status })
     .eq('id', id)

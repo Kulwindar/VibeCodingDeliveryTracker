@@ -11,8 +11,8 @@ declare global {
 }
 
 const initialOrders = [
-  { id: '1', tracking_id: 'demo-tracking-123', customer_name: 'Rahul Mehta', status: 'in_transit', created_at: '2026-06-10', updated_at: new Date().toISOString() },
-  { id: '2', tracking_id: 'uuid-2', customer_name: 'Priya Sharma', status: 'picked_up', created_at: '2026-06-10', updated_at: '2026-06-10' },
+  { id: '1', tracking_id: 'demo-tracking-123', customer_name: 'Rahul Mehta', status: 'in_transit' as const, created_at: '2026-06-10', updated_at: new Date().toISOString() },
+  { id: '2', tracking_id: 'uuid-2', customer_name: 'Priya Sharma', status: 'picked_up' as const, created_at: '2026-06-10', updated_at: '2026-06-10' },
 ];
 
 export const demoOrders: Array<{

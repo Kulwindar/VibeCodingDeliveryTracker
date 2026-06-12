@@ -1,0 +1,20 @@
+
+> @deliverytracker/web@1.0.0 test
+> vitest
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ DEV  v1.6.1 /Users/apple/Downloads/VibeCodingDeliveryTracker/apps/web
+
+include: tests/**/*.test.ts, tests/**/*.test.tsx
+exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+watch exclude:  **/node_modules/**, **/dist/**
+
+No test files found, exiting with code 1
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /Users/apple/Downloads/VibeCodingDeliveryTracker/apps/web
+npm error workspace @deliverytracker/web@1.0.0
+npm error location /Users/apple/Downloads/VibeCodingDeliveryTracker/apps/web
+npm error command failed
+npm error command sh -c vitest
