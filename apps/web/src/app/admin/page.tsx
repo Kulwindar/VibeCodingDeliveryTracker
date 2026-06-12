@@ -20,7 +20,9 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch('/api/orders');
+        const res = await fetch('/api/orders?t=' + Date.now(), {
+          cache: 'no-cache',
+        });
         if (res.ok) {
           const data = await res.json();
           setOrders(data.orders || []);

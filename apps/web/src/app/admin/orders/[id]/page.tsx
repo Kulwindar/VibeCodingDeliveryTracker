@@ -28,7 +28,9 @@ export default function AdminOrderDetail({ params }: AdminOrderDetailProps) {
   const fetchOrder = async () => {
     setLoading(true);
     setError(null);
-    const res = await fetch('/api/orders');
+    const res = await fetch('/api/orders?t=' + Date.now(), {
+      cache: 'no-cache',
+    });
     if (res.ok) {
       const data = await res.json();
       const found = data.orders?.find((o: Order) => o.id === params.id);

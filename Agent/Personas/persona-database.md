@@ -17,7 +17,6 @@ CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tracking_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
   customer_name TEXT NOT NULL,
-  customer_phone TEXT,
   status TEXT NOT NULL CHECK (status IN ('picked_up', 'in_transit', 'delivered')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

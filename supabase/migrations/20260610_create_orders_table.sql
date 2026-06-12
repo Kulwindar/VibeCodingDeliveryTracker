@@ -7,7 +7,6 @@ create table orders (
   id uuid primary key default gen_random_uuid(),
   tracking_id uuid unique not null default gen_random_uuid(),
   customer_name text not null,
-  customer_phone text,
   status text not null default 'picked_up' check (status in ('picked_up', 'in_transit', 'delivered')),
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -32,3 +31,10 @@ create trigger update_orders_updated_at
   before update on orders
   for each row
   execute procedure update_updated_at_column();
+
+-- Enable Realtime for the orders table
+-- Remove existing publication if it exists
+drop publication if exists supabase_realtime;
+
+-- Create the Realtime publication for the orders table
+create publication supabase_realtime for table orders;

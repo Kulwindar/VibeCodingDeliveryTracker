@@ -36,7 +36,7 @@ export const addOrder = (order: typeof demoOrders[0]) => {
   return order; 
 };
 export const updateOrderStatus = (id: string, status: 'picked_up' | 'in_transit' | 'delivered') => {
-  const order = demoOrders.find(o => o.id === id);
+  const order = demoOrders.find(o => o.id === id || o.tracking_id === id);
   if (order) { 
     order.status = status; 
     order.updated_at = new Date().toISOString(); 

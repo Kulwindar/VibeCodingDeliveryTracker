@@ -25,7 +25,9 @@ export default function TrackingPageClient({ trackingId, initialOrder }: Trackin
       // Try to fetch from API
       const fetchOrder = async () => {
         try {
-          const res = await fetch(`/api/track/${trackingId}`);
+          const res = await fetch(`/api/track/${trackingId}?t=${Date.now()}`, {
+            cache: 'no-cache',
+          });
           if (res.ok) {
             const data = await res.json();
             setOrder(data);
@@ -44,7 +46,7 @@ export default function TrackingPageClient({ trackingId, initialOrder }: Trackin
     if (isDemoMode() || !supabase || !order) return;
 
     const channel = supabase
-      .channel(`order:${trackingId}`)
+      .channel(`order-updates:${trackingId}`)
       .on(
         'postgres_changes',
         {
@@ -54,11 +56,13 @@ export default function TrackingPageClient({ trackingId, initialOrder }: Trackin
           filter: `tracking_id=eq.${trackingId}`,
         },
         (payload) => {
-          if (payload.new) {
-            setOrder((prev) => prev ? {
+          console.log('Realtime payload received:', payload);
+          const newRecord = payload?.new as any;
+          if (newRecord?.status) {
+            setOrder((prev: any) => prev ? {
               ...prev,
-              status: payload.new.status,
-              updated_at: payload.new.updated_at,
+              status: newRecord.status,
+              updated_at: newRecord.updated_at,
             } : null);
           }
         }
@@ -74,7 +78,9 @@ export default function TrackingPageClient({ trackingId, initialOrder }: Trackin
     if (order) {
       const interval = setInterval(async () => {
         try {
-          const res = await fetch(`/api/track/${trackingId}`);
+          const res = await fetch(`/api/track/${trackingId}?t=${Date.now()}`, {
+            cache: 'no-cache',
+          });
           if (res.ok) {
             const data = await res.json();
             setOrder(data);
@@ -86,7 +92,7 @@ export default function TrackingPageClient({ trackingId, initialOrder }: Trackin
 
       return () => clearInterval(interval);
     }
-  }, [trackingId, order]);
+  }, [trackingId]);
 
   if (loading) {
     return (
