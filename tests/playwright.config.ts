@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './tests/e2e/web',
+  testDir: './e2e/web',
   timeout: 30000,
   retries: 0,
   use: {
@@ -13,4 +13,11 @@ export default defineConfig({
     { name: 'Mobile Safari', use: { ...devices['iPhone 12'] } },
     { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
   ],
+  webServer: {
+    command: 'npm run dev -w @deliverytracker/web',
+    url: 'http://localhost:3000',
+    reuseExistingServer: true,
+    stdout: 'ignore',
+    stderr: 'pipe',
+  },
 });

@@ -1,6 +1,7 @@
 {
   "name": "deliverytracker",
   "private": true,
+  "packageManager": "npm@11.6.0",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -12,6 +13,7 @@
     "lint": "turbo run lint"
   },
   "devDependencies": {
+    "dotenv": "^17.4.2",
     "turbo": "^2.0.0"
   }
 }

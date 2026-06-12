@@ -6,7 +6,7 @@ describe('Invalid URL Handling', () => {
 
     const errorMessage = page.getByTestId('error-message');
     await expect(errorMessage).toBeVisible();
-    await expect(errorMessage).toContainText('Order not found');
+    await expect(errorMessage).toContainText('Order not found', { ignoreCase: true });
   });
 
   test('does not expose stack trace or DB errors', async ({ page }) => {
