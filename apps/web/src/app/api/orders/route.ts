@@ -1,14 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, isDemoMode } from '@/lib/supabase';
 import { createOrderSchema } from '@/lib/validators';
 import { OrderStatus } from '@deliverytracker/shared';
+import { demoOrders, addOrder } from '@/lib/demo-storage';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const validated = createOrderSchema.parse(body);
 
-    const { data, error } = await supabase
+    const trackingId = crypto.randomUUID();
+
+    if (isDemoMode()) {
+      const newOrder = {
+        id: String(demoOrders.length + 1),
+        tracking_id: trackingId,
+        customer_name: validated.customer_name,
+        status: 'picked_up' as const,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      const data = addOrder(newOrder);
+      const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/track/${data.tracking_id}`;
+
+      return NextResponse.json(
+        {
+          id: data.id,
+          tracking_id: data.tracking_id,
+          tracking_url: trackingUrl,
+          customer_name: data.customer_name,
+          status: data.status,
+          created_at: data.created_at,
+        },
+        { status: 201 }
+      );
+    }
+
+    const { data, error } = await supabase!
       .from('orders')
       .insert({
         customer_name: validated.customer_name,
@@ -24,7 +52,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL}/track/${data.tracking_id}`;
+    const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/track/${data.tracking_id}`;
 
     return NextResponse.json(
       {
@@ -45,8 +73,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
-  const { data, error } = await supabase
+export async function GET() {
+  if (isDemoMode()) {
+    return NextResponse.json({ orders: [...demoOrders], total: demoOrders.length });
+  }
+
+  const { data, error } = await supabase!
     .from('orders')
     .select('*')
     .order('created_at', { ascending: false });

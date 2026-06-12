@@ -1,5 +1,6 @@
 import TrackingPageClient from './TrackingPageClient';
-import { supabase } from '@/lib/supabase';
+import { supabase, isDemoMode } from '@/lib/supabase';
+import { getOrderByTrackingId } from '@/lib/demo-storage';
 
 interface TrackingPageProps {
   params: { trackingId: string };
@@ -8,17 +9,20 @@ interface TrackingPageProps {
 export default async function TrackingPage({ params }: TrackingPageProps) {
   const { trackingId } = params;
 
-  // Demo tracking ID for testing
-  if (trackingId === 'demo-tracking-123') {
+  if (isDemoMode()) {
+    const order = getOrderByTrackingId(trackingId);
+    if (!order) {
+      return <TrackingPageClient trackingId={trackingId} initialOrder={null} />;
+    }
     return <TrackingPageClient trackingId={trackingId} initialOrder={{
-      tracking_id: 'demo-tracking-123',
-      customer_name: 'Rahul Mehta',
-      status: 'in_transit',
-      updated_at: new Date().toISOString(),
+      tracking_id: order.tracking_id,
+      customer_name: order.customer_name,
+      status: order.status,
+      updated_at: order.updated_at,
     }} />;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from('orders')
     .select('tracking_id, customer_name, status, updated_at')
     .eq('tracking_id', trackingId)

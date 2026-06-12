@@ -1,26 +1,65 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+
+interface Order {
+  id: string;
+  tracking_id: string;
+  customer_name: string;
+  status: 'picked_up' | 'in_transit' | 'delivered';
+  updated_at: string;
+}
 
 export default function AdminPage() {
   const [customerName, setCustomerName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [orderId, setOrderId] = useState<string | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch('/api/orders');
+        if (res.ok) {
+          const data = await res.json();
+          setOrders(data.orders || []);
+        }
+      } catch {
+        setError('Failed to load orders');
+      }
+    };
+    fetchOrders();
+  }, []);
 
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    // Simulate order creation
-    const id = crypto.randomUUID();
-    setOrderId(id);
-    setLoading(false);
-  };
+    if (!customerName.trim()) return;
 
-  const orders = [
-    { id: '1', tracking_id: 'demo-tracking-123', customer_name: 'Rahul Mehta', status: 'in_transit' },
-    { id: '2', tracking_id: 'uuid-2', customer_name: 'Priya Sharma', status: 'picked_up' },
-  ];
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer_name: customerName.trim() }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setOrders([data, ...orders]);
+        setCustomerName('');
+      } else {
+        const err = await res.json();
+        setError(err.error?.message || 'Failed to create order');
+      }
+    } catch (err) {
+      setError('Network error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -56,16 +95,9 @@ export default function AdminPage() {
               Create Order
             </button>
           </form>
-          {orderId && (
-            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-800 font-medium">Order Created!</p>
-              <p className="text-sm mt-1">Tracking Link: <Link href={`/track/${orderId}`} className="text-blue-600 underline">/track/{orderId}</Link></p>
-              <button 
-                onClick={() => navigator.clipboard.writeText(`${window.location.origin}/track/${orderId}`)}
-                className="mt-2 px-4 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-              >
-                Copy Link
-              </button>
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-800 text-sm">{error}</p>
             </div>
           )}
         </div>
@@ -81,7 +113,7 @@ export default function AdminPage() {
                     <p className="text-sm text-gray-600 font-mono">{order.tracking_id}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs bg-blue-100 px-2 py-1 rounded">{order.status}</span>
+                    <span className="text-xs bg-blue-100 px-2 py-1 rounded">{order.status.replace('_', ' ')}</span>
                     <Link href={`/admin/orders/${order.id}`} className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
                       Update Status
                     </Link>
